@@ -1,0 +1,36 @@
+name:                hadruki-logger
+version:             0.1.0.0
+github:              "dvekeman/hadruki-logger"
+license:             MIT
+author:              "Dieter Vekeman"
+maintainer:          "dieter.vekeman@tinkhaven.com"
+copyright:           "(c) Tinkhaven"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+synopsis:            Logger wrapper (based on the fugacious sample application from Jasper Van Der Jeugt)
+category:            Logger
+
+description:         Please see the README on Github at <https://github.com/dvekeman/hadruki-logger#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- aeson       >= 1.1    && < 2.0
+- fast-logger >= 2.4    && < 3.0
+- text        >= 1.2.2  && < 2.0
+
+library:
+  source-dirs: src
+
+tests:
+  hadruki-logger-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - hadruki-logger
