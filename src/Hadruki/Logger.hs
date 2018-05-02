@@ -35,7 +35,7 @@ data Verbosity
     deriving (Eq, Ord, Show)
 
 instance A.FromJSON Verbosity where
-    parseJSON = A.withText "FromJSON Crumble.Logger.Verbosity" $ \t ->
+    parseJSON = A.withText "FromJSON Hadruki.Logger.Verbosity" $ \t ->
         case t of
             "debug"   -> pure Debug
             "info"    -> pure Info
@@ -53,7 +53,7 @@ instance Monoid Config where
     Config p0 v0 `mappend` Config p1 v1 = Config (p0 <|> p1) (v0 <|> v1)
 
 instance A.FromJSON Config where
-    parseJSON = A.withObject "FromJSON Crumble.Logger.Config" $ \o -> Config
+    parseJSON = A.withObject "FromJSON Hadruki.Logger.Config" $ \o -> Config
         <$> o A..:? "path"
         <*> o A..:? "verbosity"
 
