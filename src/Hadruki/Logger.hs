@@ -24,6 +24,8 @@ import           Data.Monoid
 import qualified Data.Aeson            as A
 import           Data.Maybe            (fromMaybe)
 import qualified Data.Text             as T
+import           Data.Time             (getCurrentTime)
+import           Data.Time.Format      (formatTime, iso8601DateFormat, defaultTimeLocale)
 import           Prelude               hiding (error, log)
 import qualified System.Log.FastLogger as FL
 
@@ -32,7 +34,13 @@ data Verbosity
     | Info
     | Warning
     | Error
-    deriving (Eq, Ord, Show)
+    deriving (Eq, Ord)
+
+instance Show Verbosity where
+  show Debug   = "DEBUG  "
+  show Info    = "INFO   "
+  show Warning = "WARNING"
+  show Error   = "ERROR  "
 
 instance A.FromJSON Verbosity where
     parseJSON = A.withText "FromJSON Hadruki.Logger.Verbosity" $ \t ->
@@ -49,7 +57,7 @@ data Config = Config
     } deriving (Show)
 
 instance Monoid Config where
-    mempty                              = Config empty empty
+    mempty                              = Config (Just "-") (Just Warning)
     Config p0 v0 `mappend` Config p1 v1 = Config (p0 <|> p1) (v0 <|> v1)
 
 instance A.FromJSON Config where
@@ -60,7 +68,9 @@ instance A.FromJSON Config where
 data Handle = Handle
     { hConfig    :: Config
     , hLoggerSet :: FL.LoggerSet
-    }
+    } deriving Show
+instance Show FL.LoggerSet where 
+  show _ = "N/A"
 
 withHandle :: Config -> (Handle -> IO a) -> IO a
 withHandle config f = bracket
@@ -83,7 +93,9 @@ createHandle config = bracket
 
 log :: FL.ToLogStr s => Handle -> Verbosity -> s -> IO ()
 log Handle {..} v x
-    | v >= verbosity = FL.pushLogStrLn hLoggerSet $ FL.toLogStr (show v) <> "::" <> FL.toLogStr x
+    | v >= verbosity = do
+            now <- formatTime defaultTimeLocale (iso8601DateFormat (Just "%H:%M:%S.%q")) <$> getCurrentTime 
+            FL.pushLogStrLn hLoggerSet $ FL.toLogStr (show v) <> " - " <> FL.toLogStr now <> " - " <> FL.toLogStr x
     | otherwise      = return ()
   where
     verbosity = fromMaybe Debug (cVerbosity hConfig)
