@@ -17,10 +17,11 @@ description:         Please see the README on Github at <https://github.com/dvek
 
 dependencies:
 - base >= 4.7 && < 5
-- aeson       >= 1.1    && < 2.0
-- fast-logger >= 2.4    && < 3.0
-- text        >= 1.2.2  && < 2.0
-- time        >= 1.6    && < 2.0
+- aeson       >= 1.1
+- fast-logger >= 2.4
+- reducers
+- text        >= 1.2.2
+- time        >= 1.6
 
 library:
   source-dirs: src

@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards   #-}
+{-# LANGUAGE DeriveAnyClass    #-}
 module Hadruki.Logger
     ( Verbosity (..)
     , Config (..)
@@ -21,6 +22,7 @@ module Hadruki.Logger
 import           Control.Applicative   (Alternative (..))
 import           Control.Exception     (bracket)
 import           Data.Monoid
+import           Data.Semigroup.Union  as S
 import qualified Data.Aeson            as A
 import           Data.Maybe            (fromMaybe)
 import qualified Data.Text             as T
@@ -59,6 +61,9 @@ data Config = Config
 instance Monoid Config where
     mempty                              = Config (Just "-") (Just Warning)
     Config p0 v0 `mappend` Config p1 v1 = Config (p0 <|> p1) (v0 <|> v1)
+
+instance Semigroup Config where
+    Config p1 v1 <> Config p2 v2 = Config (p1 <|> p2) (v1 <|> v2)
 
 instance A.FromJSON Config where
     parseJSON = A.withObject "FromJSON Hadruki.Logger.Config" $ \o -> Config
